@@ -1,4 +1,4 @@
-%% Simulation of a Reinforcement Learning Model 
+%% Simulation of a Reinforcement Learning Model (5NP)
 % This code simulates a 5-parameter RL Model, as described in 
 % Guitart-Masip et al. (2012)
 % Computational Psychiatry Seminar WS 20/21 Dr. Nils Kroemer
