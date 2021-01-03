@@ -2,7 +2,7 @@
 % This code simulates a 5-parameter RL Model, as described in 
 % Guitart-Masip et al. (2012)
 % Computational Psychiatry Seminar WS 20/21 Dr. Nils Kroemer
-% Code written: Xin, Kirsti, Sophie, Corinna
+% Code written: Kirsti, Sophie, Corinna, Xin
 
 %% Initialise paramters 
 % sim_par is a structure containing all settings for the simulation
