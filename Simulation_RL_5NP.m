@@ -3,7 +3,7 @@
 % Guitart-Masip et al. (2012)
 % Computational Psychiatry Seminar WS 20/21 Dr. Nils Kroemer
 % Code written: Kirsti, Sophie, Corinna, Xin
-
+% hello from Sophie :)
 %% Initialise paramters 
 % sim_par is a structure containing all settings for the simulation
 
