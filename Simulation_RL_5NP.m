@@ -67,8 +67,25 @@ for i = 1:sim_par.n_part
             ActionWeight.nogo =  Q(t) ;
 
             %Action Probability (softmax function)
+<<<<<<< Updated upstream
             %ActionProb(t,1) = softmax(ActionWeight
 
+=======
+            n = [ActionWeight_go(t,1), ActionWeight_nogo(t,1)];
+            
+            %a(t,1) = exp(n(1))/sum(exp(n)) ;%this is softmax(n) 
+            a = softmax(n);
+            a_go(t,1) = a(1,1)
+            disp(a_go) 
+            
+            subplot(2,1,1), bar(n), ylabel('n')
+            subplot(2,1,2), bar(a), ylabel('a')
+            
+            % Calculate Action Probability for Go Action 
+            ActionProb(t,1) = a_go(t,1) * (1 - sim_par.xi) + (sim_par.xi/2);
+            
+            % Make Action Choice 
+>>>>>>> Stashed changes
             ActionChoice(t,1) = binornd(1, ActionProb(t,1));   
        
         end 
