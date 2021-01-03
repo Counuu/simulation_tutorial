@@ -67,6 +67,12 @@ for i = 1:sim_par.n_part
             ActionWeight.nogo =  Q(t) ;
 
             %Action Probability (softmax function)
+            n = [ActionWeight.go; ActionWeight.nogo];
+            a = softmax(n);
+            subplot(2,1,1), bar(n), ylabel('n')
+            subplot(2,1,2), bar(a), ylabel('a')
+            
+            
             %ActionProb(t,1) = softmax(ActionWeight
 
             ActionChoice(t,1) = binornd(1, ActionProb(t,1));   
