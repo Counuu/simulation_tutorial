@@ -6,7 +6,7 @@
 % hello from Sophie :)
 %% Initialise paramters 
 % sim_par is a structure containing all settings for the simulation
-
+clear all
 %Experiment settings
 sim_par.n_trials = 60; %number of trials
 sim_par.n_part = 1;   %number of simulated participants
@@ -48,7 +48,7 @@ for i = 1:sim_par.n_part
            ActionWeight_go(t,1) = Q(t);
            ActionWeight_nogo(t,1) = Q(t); 
            ActionProb(t,1) = 0.5;
-           a(t,1) = 0
+           a(t,1) = 0;
            
            % binord generates random numbers from binomial distribution, nr trials n, prob of success for each trial p.
            ActionChoice(t,1) = binornd(1, ActionProb(t,1));       
@@ -123,7 +123,7 @@ for i = 1:sim_par.n_part
     
 end 
 
-
+plot(ActionProb)
 
 
 
