@@ -47,6 +47,8 @@ for i = 1:sim_par.n_part
            
            % On the first trial the action (go vs. nogo) is random
            ActionProb(t,1) = 0.5;
+           
+           % binord generates random numbers from binomial distribution, nr trials n, prob of success for each trial p.
            ActionChoice(t,1) = binornd(1, ActionProb(t,1));       
         
         %All subsequent trials
