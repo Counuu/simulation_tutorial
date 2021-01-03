@@ -23,7 +23,7 @@ sim_par.xi  = 0.5;      %lapse of the simulated agent
 sim_par.gamma  = 1;     %reward sensitivity of the simulated agent
 sim_par.delta  = 1;     %punishment sensitivty of the simulated agent
 %sim_par.epsilon  = 0;   %approach-avoidance bias of the simulated agent
-sim_par.zeta  = 1;      %action bias of the simulated agent
+sim_par.zeta  = 0.2;      %action bias of the simulated agent
 
 % Preallocation of variables to increase loop speed 
 
@@ -48,6 +48,7 @@ for i = 1:sim_par.n_part
            ActionWeight_go(t,1) = Q(t);
            ActionWeight_nogo(t,1) = Q(t); 
            ActionProb(t,1) = 0.5;
+           a(t,1) = 0
            
            % binord generates random numbers from binomial distribution, nr trials n, prob of success for each trial p.
            ActionChoice(t,1) = binornd(1, ActionProb(t,1));       
@@ -72,12 +73,16 @@ for i = 1:sim_par.n_part
 
             %Action Probability (softmax function)
             n = [ActionWeight_go(t,1); ActionWeight_nogo(t,1)];
-            a = exp(n(1))/sum(exp(n)); %this is softmax(n) 
+            
+            %a(t,1) = exp(n(1))/sum(exp(n)) ;%this is softmax(n) 
+            a(t,1) = softmax(n);
+            disp(n) 
+            disp(a(t,1))
             subplot(2,1,1), bar(n), ylabel('n')
             subplot(2,1,2), bar(a), ylabel('a')
             
             % Calculate Action Probability for Go Action 
-            ActionProb(t,1) = a(1) * (1 - sim_par.xi) + (sim_par.xi/2);
+            ActionProb(t,1) = a(t,1) * (1 - sim_par.xi) + (sim_par.xi/2);
             
             % Make Action Choice 
             ActionChoice(t,1) = binornd(1, ActionProb(t,1));   
