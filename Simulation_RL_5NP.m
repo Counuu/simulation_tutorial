@@ -45,6 +45,8 @@ for i = 1:sim_par.n_part
            Q(t) = 0; %initial Q-value is set to zero 
            
            % On the first trial the action (go vs. nogo) is random
+           ActionWeight_go(t,1) = Q(t);
+           ActionWeight_nogo(t,1) = Q(t); 
            ActionProb(t,1) = 0.5;
            
            % binord generates random numbers from binomial distribution, nr trials n, prob of success for each trial p.
@@ -55,19 +57,22 @@ for i = 1:sim_par.n_part
            
             %Q-update: Rescorla-Wagner update       
             % separate parameter for sensitivity for reward and punishment 
-            if reinforcement == 1 
-               Q(t) = Q(t-1) +  sim_par.alpha* ((sim_par.gamma * reinforcement) - Q(t-1)); 
-            elseif reinforcement == -1 
-               Q(t) = Q(t-1) +  sim_par.alpha* ((sim_par.delta * reinforcement) - Q(t-1));  
+            % Reinforcement from previous trial!
+            if reinforcement(t-1,1) == 1 
+               Q(t) = Q(t-1) +  sim_par.alpha* ((sim_par.gamma * reinforcement(t-1,1)) - Q(t-1)); 
+            elseif reinforcement(t-1,1) == -1 
+               Q(t) = Q(t-1) +  sim_par.alpha* ((sim_par.delta * reinforcement(t-1,1)) - Q(t-1));  
+            elseif reinforcement(t-1,1) == 0 
+               Q(t) = Q(t-1) +  sim_par.alpha* ( - Q(t-1));
             end 
             
             %Action Weight for go and no-go 
-            ActionWeight.go(t,1) = Q(t) + sim_par.zeta ;
-            ActionWeight.nogo(t,1) =  Q(t) ;
+            ActionWeight_go(t,1) = Q(t) + sim_par.zeta ;
+            ActionWeight_nogo(t,1) =  Q(t) ;
 
             %Action Probability (softmax function)
-            n = [ActionWeight.go; ActionWeight.nogo];
-            a = exp(n)/sum(exp(n)); %this is softmax(n) 
+            n = [ActionWeight_go(t,1); ActionWeight_nogo(t,1)];
+            a = exp(n(1))/sum(exp(n)); %this is softmax(n) 
             subplot(2,1,1), bar(n), ylabel('n')
             subplot(2,1,2), bar(a), ylabel('a')
             
@@ -81,27 +86,29 @@ for i = 1:sim_par.n_part
         
 
         %Agent choses action, now reinforcement is determined, given stimulus
-        if ActionChoice == 0 % No-go action 
-           if stim_pres(1) == 1 %Go-to-avoid (GA)
-              reinforcement = sim_par.punish *binornd(1, sim_par.prob); 
-           elseif stim_pres(1) == 2 %Go-to-win (GW) 
-              reinforcement = sim_par.reward*binornd(1, 1-sim_par.prob); 
-           elseif stim_pres(1) == 3 %No-go-to-avoid (NGA)
-              reinforcement = sim_par.punish *binornd(1, 1-sim_par.prob); 
-           elseif stim_pres(1) == 4 %No-go-win (NGW)
-              reinforcement = sim_par.reward*binornd(1, sim_par.prob);
+        % Reinforcement should be +1 for reward, 0 for nothing and -1 for
+        % punishment 
+        if ActionChoice(t,1) == 0 % No-go action 
+           if stim_pres(t) == 1 %Go-to-avoid (GA)
+              reinforcement(t,1) = sim_par.punish *binornd(1, sim_par.prob); 
+           elseif stim_pres(t) == 2 %Go-to-win (GW) 
+              reinforcement(t,1) = sim_par.reward*binornd(1, 1-sim_par.prob); 
+           elseif stim_pres(t) == 3 %No-go-to-avoid (NGA)
+              reinforcement(t,1) = sim_par.punish *binornd(1, 1-sim_par.prob); 
+           elseif stim_pres(t) == 4 %No-go-win (NGW)
+              reinforcement(t,1) = sim_par.reward*binornd(1, sim_par.prob);
            end 
    
   
-        elseif ActionChoice == 1 %1: Go action
-           if stim_pres(1) == 1 %Go-to-avoid (GA)
-              reinforcement = sim_par.punish *binornd(1, 1-sim_par.prob); 
-           elseif stim_pres(1) == 2 %Go-to-win (GW) 
-              reinforcement = sim_par.reward*binornd(1, sim_par.prob); 
-           elseif stim_pres(1) == 3 %No-go-to-avoid (NGA)
-              reinforcement = sim_par.punish *binornd(1, sim_par.prob); 
-           elseif stim_pres(1) == 4 %No-go-win (NGW)
-              reinforcement = sim_par.reward*binornd(1, 1-sim_par.prob);
+        elseif ActionChoice(t,1) == 1 %1: Go action
+           if stim_pres(t) == 1 %Go-to-avoid (GA)
+              reinforcement(t,1) = sim_par.punish *binornd(1, 1-sim_par.prob); 
+           elseif stim_pres(t) == 2 %Go-to-win (GW) 
+              reinforcement(t,1) = sim_par.reward*binornd(1, sim_par.prob); 
+           elseif stim_pres(t) == 3 %No-go-to-avoid (NGA)
+              reinforcement(t,1) = sim_par.punish *binornd(1, sim_par.prob); 
+           elseif stim_pres(t) == 4 %No-go-win (NGW)
+              reinforcement(t,1) = sim_par.reward*binornd(1, 1-sim_par.prob);
            end
         end
         

@@ -67,19 +67,22 @@ for i = 1:sim_par.n_part
 
             %Action Probability (softmax function)
             n = [ActionWeight.go; ActionWeight.nogo];
-            a = exp(n)/sum(exp(n)); %softmax(n) =n))
+            a = exp(n)/sum(exp(n)); %this is softmax(n) 
             subplot(2,1,1), bar(n), ylabel('n')
             subplot(2,1,2), bar(a), ylabel('a')
             
+            % Calculate Action Probability for Go Action 
+            ActionProb(t,1) = a(1) * (1 - sim_par.xi) + (sim_par.xi/2);
             
-            ActionProb(t,1) = a * (1 - sim_par.xi) + (sim_par.xi/2)
-
+            % Make Action Choice 
             ActionChoice(t,1) = binornd(1, ActionProb(t,1));   
        
         end 
         
 
         %Agent choses action, now reinforcement is determined, given stimulus
+        % Reinforcement should be +1 for reward, 0 for nothing and -1 for
+        % punishment 
         if ActionChoice == 0 % No-go action 
            if stim_pres(1) == 1 %Go-to-avoid (GA)
               reinforcement = sim_par.punish *binornd(1, sim_par.prob); 
