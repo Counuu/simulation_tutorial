@@ -9,8 +9,21 @@ clear all
 %% Initialise paramters 
 % sim_par is a structure containing all settings for the simulation
 
+<<<<<<< Updated upstream
 % Experiment settings
 sim_par.n_trials = 60; %number of trials (total)
+=======
+%RL parameters
+sim_par.alpha = 0.1;    %learning rate of the simulated agent
+sim_par.beta  = 2;      %lapse of the simulated agent
+sim_par.gamma  = 1;     %reward sensitivity of the simulated agent
+sim_par.delta  = 1;     %punishment sensitivty of the simulated agent
+%sim_par.epsilon  = 0;   %approach-avoidance bias of the simulated agent
+sim_par.zeta  = 1;      %action bias of the simulated agent
+
+%Experiment settings
+sim_par.n_trials = 60; %number of trials (per condition)
+>>>>>>> Stashed changes
 sim_par.n_part = 1;   %number of simulated participants
 sim_par.n_cond = 4; %number of conditions 
 sim_par.prob = 0.8; %probability to reinforce (vs. nothing)
@@ -39,12 +52,20 @@ for i = 1:sim_par.n_part %For now one sim, later with different parameter settin
     stim_pres = [ones(each_cond,1);2*ones(each_cond,1);3*ones(each_cond,1);4*ones(each_cond,1)]; 
     stim_pres = stim_pres(randperm(length(stim_pres))); 
     
+<<<<<<< Updated upstream
     % ==== Learning for each trial ========================================
     for t = 1:sim_par.n_trials
+=======
+    % Go through all stimulus conditions
+    for t = 1:sim_par.n_cond
+        
+        % Go through all trials of one condition 
+        for s = 1:sim_par.n_trials
+>>>>>>> Stashed changes
         
         % First trial with initial settings (no previous knowledge)
         if t == 1 
-           Q(t) = 0; %initial Q-value is set to zero 
+           Q(t,s) = 0; %initial Q-value is set to zero 
            
            % On the first trial the Action Probability is random,
            % initialise other variables for storage 
