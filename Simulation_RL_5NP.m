@@ -7,14 +7,6 @@
 %% Initialise paramters 
 % sim_par is a structure containing all settings for the simulation
 
-%RL parameters
-sim_par.alpha = 0.1;    %learning rate of the simulated agent
-sim_par.beta  = 2;      %lapse of the simulated agent
-sim_par.gamma  = 1;     %reward sensitivity of the simulated agent
-sim_par.delta  = 1;     %punishment sensitivty of the simulated agent
-%sim_par.epsilon  = 0;   %approach-avoidance bias of the simulated agent
-sim_par.zeta  = 1;      %action bias of the simulated agent
-
 %Experiment settings
 sim_par.n_trials = 60; %number of trials
 sim_par.n_part = 1;   %number of simulated participants
@@ -25,8 +17,15 @@ sim_par.punish = -1; %valence of punishment
 
 %% Simulation of Agents Behavior using Reinforcement Learning 
 
+%RL parameters: inspect different model paramter outcomes! 
+sim_par.alpha = 0.1;    %learning rate of the simulated agent
+sim_par.xi  = 0.5;      %lapse of the simulated agent
+sim_par.gamma  = 1;     %reward sensitivity of the simulated agent
+sim_par.delta  = 1;     %punishment sensitivty of the simulated agent
+%sim_par.epsilon  = 0;   %approach-avoidance bias of the simulated agent
+sim_par.zeta  = 1;      %action bias of the simulated agent
+
 % Preallocation of variables to increase loop speed 
-% ... 
 
 for i = 1:sim_par.n_part
     
@@ -63,18 +62,19 @@ for i = 1:sim_par.n_part
             end 
             
             %Action Weight for go and no-go 
-            ActionWeight.go = Q(t) + sim_par.zeta ;
-            ActionWeight.nogo =  Q(t) ;
+            ActionWeight.go(t,1) = Q(t) + sim_par.zeta ;
+            ActionWeight.nogo(t,1) =  Q(t) ;
 
             %Action Probability (softmax function)
             n = [ActionWeight.go; ActionWeight.nogo];
-            a = softmax(n);
+            a = exp(n)/sum(exp(n)); %this is softmax(n) 
             subplot(2,1,1), bar(n), ylabel('n')
             subplot(2,1,2), bar(a), ylabel('a')
             
+            % Calculate Action Probability for Go Action 
+            ActionProb(t,1) = a(1) * (1 - sim_par.xi) + (sim_par.xi/2);
             
-            %ActionProb(t,1) = softmax(ActionWeight
-
+            % Make Action Choice 
             ActionChoice(t,1) = binornd(1, ActionProb(t,1));   
        
         end 
