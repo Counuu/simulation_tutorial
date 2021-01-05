@@ -24,11 +24,11 @@ sim_par.n_actions = 2; %nr of possible actions (go, no-go)
 
 % RL parameters: later inspect different model paramter outcomes! 
 sim_par.alpha = 0.5;    %learning rate of the simulated agent
-sim_par.xi  = 0.5;      %lapse of the simulated agent
-sim_par.gamma  = 0.6;     %reward sensitivity of the simulated agent
+sim_par.xi  = 0.2;      %lapse of the simulated agent
+sim_par.gamma  = 0.7;     %reward sensitivity of the simulated agent
 sim_par.delta  = 0.5;     %punishment sensitivty of the simulated agent
 %sim_par.epsilon  = 0;   %approach-avoidance bias of the simulated agent
-sim_par.zeta  = 0.1;      %action bias of the simulated agent
+sim_par.zeta  = 0.2;      %action bias of the simulated agent
 
 
 %%
@@ -135,6 +135,8 @@ end
 
 % Re-create Plots from the Paper (Figure 2.A-D) 
 
+tiledlayout(2,1)
+nexttile 
 % Probability to Go, depending on stimulus condition 
 plot(P_GO(stim_pres == 1))
 hold on 
@@ -145,6 +147,15 @@ hold on
 plot(P_GO(stim_pres == 4))
 legend('Go-to-avoid (GA)','Go-to-win (GW) ','No-go-to-avoid (NGA)','No-go-win (NGW)')
 
+nexttile
+% Actual Action (0: no go, 1: go) depending on stimulus condition 
+plot(ActionChoice(stim_pres == 1))
+hold on
+plot(ActionChoice(stim_pres == 2))
+hold on
+plot(ActionChoice(stim_pres == 3))
+hold on 
+plot(ActionChoice(stim_pres == 4))
 
 % Plot Behavior depending on parameter settings 
 % .... 
