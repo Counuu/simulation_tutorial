@@ -39,6 +39,15 @@ sim_par.zeta  = 0.2;      %action bias of the simulated agent
 
 
 for i = 1:sim_par.n_part %For now one sim, later with different parameter settings
+    
+    % ==== Stimulus conditions ============================================
+    % for each experimental run stimulus conditions are
+    % pseudorandomly determind (equally often, but randomly shuffled)
+    each_cond = sim_par.n_trials/sim_par.n_cond; 
+    stim_pres = [ones(each_cond,1);2*ones(each_cond,1);3*ones(each_cond,1);4*ones(each_cond,1)]; 
+    stim_pres = stim_pres(randperm(length(stim_pres))); 
+    
+    
     Q = zeros(sim_par.n_cond,sim_par.n_actions);
     ActionWeight_go = zeros(sim_par.n_trial_cond,sim_par.n_cond,sim_par.n_actions);
     ActionWeight_nogo = zeros(sim_par.n_trial_cond,sim_par.n_cond,sim_par.n_actions);
@@ -116,6 +125,8 @@ for i = 1:sim_par.n_part %For now one sim, later with different parameter settin
                   reinforcement(t,s) = sim_par.reward*binornd(1, 1-sim_par.prob);
                end
             end
+            
+            
             
         end 
     end 
