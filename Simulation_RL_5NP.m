@@ -49,9 +49,9 @@ for i = 1:sim_par.n_part %For now one sim, later with different parameter settin
     stim_pres = stim_pres(randperm(length(stim_pres))); 
     
     % ==== Initialise values when no experience exists ====================
-    Q = zeros(sim_par.n_cond,sim_par.n_actions);
-    ActionWeight_go = zeros(sim_par.n_trial_cond,sim_par.n_cond,sim_par.n_actions);
-    ActionWeight_nogo = zeros(sim_par.n_trial_cond,sim_par.n_cond,sim_par.n_actions);
+    Q = NaN(sim_par.n_cond,sim_par.n_actions);
+    ActionWeight_go = NaN(sim_par.n_trial_cond,sim_par.n_cond,sim_par.n_actions);
+    ActionWeight_nogo = NaN(sim_par.n_trial_cond,sim_par.n_cond,sim_par.n_actions);
     ActionProb = ones(sim_par.n_trial_cond,sim_par.n_cond,sim_par.n_actions)/2;
     softmaxval = 0;
     
