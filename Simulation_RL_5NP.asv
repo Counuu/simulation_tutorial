@@ -16,6 +16,7 @@ sim_par.n_cond = 4; %number of conditions
 sim_par.prob = 0.8; %probability to reinforce (vs. nothing)
 sim_par.reward = 1; %valence of reward
 sim_par.punish = -1; %valence of punishment 
+sim_par.nothing = 0; %valence of no reward/no punish
 sim_par.n_trial_cond = sim_par.n_trials/sim_par.n_cond; %nr of trials per condition
 sim_par.n_actions = 2; %nr of possible actions (go, no-go)
 
@@ -44,8 +45,8 @@ for i = 1:sim_par.n_part %For now one sim, later with different parameter settin
     % for each experimental run stimulus conditions are
     % pseudorandomly determind (equally often, but randomly shuffled)
     each_cond = sim_par.n_trials/sim_par.n_cond; 
-    s = [ones(each_cond,1);2*ones(each_cond,1);3*ones(each_cond,1);4*ones(each_cond,1)]; 
-    s = s(randperm(length(s))); 
+    stim_pres = [ones(each_cond,1);2*ones(each_cond,1);3*ones(each_cond,1);4*ones(each_cond,1)]; 
+    stim_pres = stim_pres(randperm(length(stim_pres))); 
     
     % ==== Initialise values when no experience exists ====================
     Q = zeros(sim_par.n_cond,sim_par.n_actions);
@@ -57,6 +58,8 @@ for i = 1:sim_par.n_part %For now one sim, later with different parameter settin
     % Go through all trials
     for t = 1:sim_par.n_trials
         
+        s = stim_pres(t); % currently presented stimulus (condition) 
+        
         % ==== Learning for each trial ====================================
         
             % First trial with initial settings (no previous knowledge)
@@ -65,21 +68,7 @@ for i = 1:sim_par.n_part %For now one sim, later with different parameter settin
                
             % All subsequent trials
             else
-                % For each possible action 
-                for a = 1:sim_par.n_actions
-                    
-                    % Q-update: Rescorla-Wagner update       
-                    % > separate parameter for sensitivity for reward (gamma) and punishment (delta) 
-                    % > reinforcement t-1, as they refer to the previous trial 
-                    if reinforcement(t-1,s) == sim_par.reward  %rewarded
-                       Q(s,a) = Q(s,a) +  sim_par.alpha* ((sim_par.gamma * reinforcement(t-1,s)) - Q(s,a)); 
-                    elseif reinforcement(t-1,s) == sim_par.punish  %punished
-                       Q(s,a) = Q(s,a) +  sim_par.alpha* ((sim_par.delta * reinforcement(t-1,s)) - Q(s,a));  
-                    elseif reinforcement(t-1,s) == sim_par.puni %nothing
-                       Q(s,a) = Q(s,a) +  sim_par.alpha* ( - Q(s,a));
-                    end 
-                    
-                
+        
                     % Action Weight for go and no-go 
                     ActionWeight_go(t,s,a) = Q(s,a) + sim_par.zeta ;
                     ActionWeight_nogo(t,s,a) =  Q(s,a) ;
@@ -111,6 +100,19 @@ for i = 1:sim_par.n_part %For now one sim, later with different parameter settin
                elseif s == 4 %No-go-win (NGW)
                   reinforcement(t,s) = sim_par.reward*binornd(1, sim_par.prob);
                end 
+               
+               a = ActionChoice; 
+
+               % Q-update: Rescorla-Wagner update       
+               % > separate parameter for sensitivity for reward (gamma) and punishment (delta) 
+               % > reinforcement t-1, as they refer to the previous trial 
+               if reinforcement(t,s) == sim_par.reward  %rewarded
+                  Q(s,a) = Q(s,a) +  sim_par.alpha* ((sim_par.gamma * reinforcement(t,s)) - Q(s,a)); 
+               elseif reinforcement(t,s) == sim_par.punish  %punished
+                  Q(s,a) = Q(s,a) +  sim_par.alpha* ((sim_par.delta * reinforcement(t,s)) - Q(s,a));  
+               elseif reinforcement(t,s) == sim_par.nothing %nothing
+                  Q(s,a) = Q(s,a) +  sim_par.alpha* ( - Q(s,a));
+               end 
 
             elseif ActionChoice(t,s) == 1 %1: Go action
                if s == 1 %Go-to-avoid (GA)
@@ -122,9 +124,23 @@ for i = 1:sim_par.n_part %For now one sim, later with different parameter settin
                elseif s == 4 %No-go-win (NGW)
                   reinforcement(t,s) = sim_par.reward*binornd(1, 1-sim_par.prob);
                end
+               
+               a = ActionChoice; 
+               % Q-update: Rescorla-Wagner update       
+               % > separate parameter for sensitivity for reward (gamma) and punishment (delta) 
+               % > reinforcement t-1, as they refer to the previous trial 
+               if reinforcement(t,s) == sim_par.reward  %rewarded
+                  Q(s,a) = Q(s,a) +  sim_par.alpha* ((sim_par.gamma * reinforcement(t,s)) - Q(s,a)); 
+               elseif reinforcement(t,s) == sim_par.punish  %punished
+                  Q(s,a) = Q(s,a) +  sim_par.alpha* ((sim_par.delta * reinforcement(t,s)) - Q(s,a));  
+               elseif reinforcement(t,s) == sim_par.nothing %nothing
+                  Q(s,a) = Q(s,a) +  sim_par.alpha* ( - Q(s,a));
+               end 
+               
             end
             
             
+
             
          
     end 
