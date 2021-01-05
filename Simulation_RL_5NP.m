@@ -43,6 +43,7 @@ for i = 1:sim_par.n_part %For now one sim, later with different parameter settin
     ActionWeight_go = zeros(sim_par.n_trial_cond,sim_par.n_cond,sim_par.n_actions);
     ActionWeight_nogo = zeros(sim_par.n_trial_cond,sim_par.n_cond,sim_par.n_actions);
     ActionProb = ones(sim_par.n_trial_cond,sim_par.n_cond,sim_par.n_actions)/2;
+    
     % ==== Stimulus conditions ============================================
     % Go through all stimulus conditions
     for s = 1:sim_par.n_cond
@@ -53,7 +54,7 @@ for i = 1:sim_par.n_part %For now one sim, later with different parameter settin
         
             % First trial with initial settings (no previous knowledge)
             if t == 1 
-               ActionChoice(t,s) = binornd(1, 0.5); % 0 = No-Go, 1 = Go 
+               ActionChoice(t,s) = binornd(1, ActionProb(t,s)); % 0 = No-Go, 1 = Go 
                
             % All subsequent trials
             else
