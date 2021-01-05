@@ -74,12 +74,12 @@ for i = 1:sim_par.n_part %For now one sim, later with different parameter settin
             % All subsequent trials
             else
                 data.ActionWeight{cond}(condTrialNr,1:2) = [data.Q(cond,1) + sim_par.zeta , data.Q(cond,2)]; % Action weight for go and no-go 
-                data.ActionProb{cond}(condTrialNr,1) = (exp(data.ActionWeight{cond}(condTrialNr,1))/sum(exp(data.ActionWeight{cond}(condTrialNr,1:2)),'all'))* (1 - sim_par.xi) + (sim_par.xi/2); % Calculate Go probability (softmax and irreducible noise (xi))
-                %data.GoProb{cond}(condTrialNr,1) = (exp(data.ActionWeight{cond}(condTrialNr,1))/sum(exp(data.Q(cond,:)),'all'))* (1 - sim_par.xi) + (sim_par.xi/2); % Calculate Go probability (softmax and irreducible noise (xi))   
-                data.ActionProb{cond}(condTrialNr,2) = (exp(data.ActionWeight{cond}(condTrialNr,2))/sum(exp(data.ActionWeight{cond}(condTrialNr,1:2)),'all'))* (1 - sim_par.xi) + (sim_par.xi/2); % Calculate Go probability (softmax and irreducible noise (xi))
+                %data.ActionProb{cond}(condTrialNr,1) = (exp(data.ActionWeight{cond}(condTrialNr,1))/sum(exp(data.ActionWeight{cond}(condTrialNr,1:2)),'all'))* (1 - sim_par.xi) + (sim_par.xi/2); % Calculate Go probability (softmax and irreducible noise (xi))
+                data.ActionProb{cond}(condTrialNr,1) = (exp(data.ActionWeight{cond}(condTrialNr,1))/sum(exp(data.Q(cond,:)),'all'))* (1 - sim_par.xi) + (sim_par.xi/2); % Calculate Go probability (softmax and irreducible noise (xi))   
+                %data.ActionProb{cond}(condTrialNr,2) = (exp(data.ActionWeight{cond}(condTrialNr,2))/sum(exp(data.ActionWeight{cond}(condTrialNr,1:2)),'all'))* (1 - sim_par.xi) + (sim_par.xi/2); % Calculate Go probability (softmax and irreducible noise (xi))
                 maxProb = double(data.ActionProb{cond}(condTrialNr,:)==max(data.ActionProb{cond}(condTrialNr,:)));
-                data.ActionChoice(trial,1)= maxProb(1)+1;
-                %data.ActionChoice(trial,1) = binornd(1,data.GoProb{cond}(condTrialNr,1))+1; % Action Choice: 1 = No-go, 2= Go
+                %data.ActionChoice(trial,1)= maxProb(1)+1;
+                data.ActionChoice(trial,1) = binornd(1,data.ActionProb{cond}(condTrialNr,1))+1; % Action Choice: 1 = No-go, 2= Go
             end 
             
             StimCounter(cond,1) = StimCounter(cond,1)+1;
