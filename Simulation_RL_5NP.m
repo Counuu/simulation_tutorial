@@ -44,19 +44,20 @@ for i = 1:sim_par.n_part %For now one sim, later with different parameter settin
     % for each experimental run stimulus conditions are
     % pseudorandomly determind (equally often, but randomly shuffled)
     each_cond = sim_par.n_trials/sim_par.n_cond; 
-    stim_pres = [ones(each_cond,1);2*ones(each_cond,1);3*ones(each_cond,1);4*ones(each_cond,1)]; 
-    stim_pres = stim_pres(randperm(length(stim_pres))); 
+    s = [ones(each_cond,1);2*ones(each_cond,1);3*ones(each_cond,1);4*ones(each_cond,1)]; 
+    s = s(randperm(length(s))); 
     
     
     Q = zeros(sim_par.n_cond,sim_par.n_actions);
     ActionWeight_go = zeros(sim_par.n_trial_cond,sim_par.n_cond,sim_par.n_actions);
     ActionWeight_nogo = zeros(sim_par.n_trial_cond,sim_par.n_cond,sim_par.n_actions);
     ActionProb = ones(sim_par.n_trial_cond,sim_par.n_cond,sim_par.n_actions)/2;
+    softmaxval = 0;
     
     % ==== Stimulus conditions ============================================
-    % Go through all stimulus conditions
-    for s = 1:sim_par.n_cond
-        softmaxval = 0;
+    % Go through all trials
+    for t = 1:sim_par.n_trials
+        
         % ==== Learning for each trial ====================================
         % Go through each trial of current stimulus conditon
         for t = 1:sim_par.n_trial_cond
