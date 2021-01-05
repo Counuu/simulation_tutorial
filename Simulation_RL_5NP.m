@@ -2,7 +2,7 @@
 % This code simulates a 5-parameter RL Model, as described in 
 % Guitart-Masip et al. (2012)
 % Computational Psychiatry Seminar WS 20/21 Dr. Nils Kroemer
-% Code written: Kirsti, Sophie, Corinna, Xin
+% Code written: Kirsti, Sophie, Corinna, Xin 
 
 clear all
 
@@ -138,6 +138,7 @@ plot(ActionProb(:,:,1))
 
 % Plot Behavior depending on parameter settings 
 % .... 
+
 
 
 
