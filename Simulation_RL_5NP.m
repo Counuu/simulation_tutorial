@@ -23,12 +23,12 @@ sim_par.n_actions = 2; %nr of possible actions (go, no-go)
 %% Simulation of Agents Behavior using Reinforcement Learning 
 
 % RL parameters: later inspect different model paramter outcomes! 
-sim_par.alpha = 0.1;    %learning rate of the simulated agent
+sim_par.alpha = 0.5;    %learning rate of the simulated agent
 sim_par.xi  = 0.5;      %lapse of the simulated agent
-sim_par.gamma  = 1;     %reward sensitivity of the simulated agent
-sim_par.delta  = 1;     %punishment sensitivty of the simulated agent
+sim_par.gamma  = 0.6;     %reward sensitivity of the simulated agent
+sim_par.delta  = 0.5;     %punishment sensitivty of the simulated agent
 %sim_par.epsilon  = 0;   %approach-avoidance bias of the simulated agent
-sim_par.zeta  = 0.2;      %action bias of the simulated agent
+sim_par.zeta  = 0.1;      %action bias of the simulated agent
 
 % Preallocation of variables to increase loop speed 
  %Q
@@ -38,7 +38,7 @@ sim_par.zeta  = 0.2;      %action bias of the simulated agent
 % ActionChoice
 % reinforcement 
 
-
+%%
 for i = 1:sim_par.n_part %For now one sim, later with different parameter settings
     
     % ==== Stimulus conditions ============================================
@@ -49,11 +49,12 @@ for i = 1:sim_par.n_part %For now one sim, later with different parameter settin
     stim_pres = stim_pres(randperm(length(stim_pres))); 
     
     % ==== Initialise values when no experience exists ====================
-    Q = zeros(sim_par.n_cond,sim_par.n_actions);
-    ActionWeight_go = NaN(sim_par.n_trial_cond,sim_par.n_cond,sim_par.n_actions);
-    ActionWeight_nogo = NaN(sim_par.n_trial_cond,sim_par.n_cond,sim_par.n_actions);
-    ActionProb = ones(sim_par.n_trial_cond,sim_par.n_cond,sim_par.n_actions)/2;
-    softmaxval = 0;
+    Q = zeros(sim_par.n_cond,sim_par.n_actions); %Initial Q-values zero 
+    ActionWeight_go = zeros(sim_par.n_cond,sim_par.n_actions);
+    ActionWeight_nogo = zeros(sim_par.n_cond,sim_par.n_actions);
+    ActionProb = ones(sim_par.n_cond,sim_par.n_actions)/2; 
+    
+    Save_P_GO = [];
     
     % Go through all trials
     for t = 1:sim_par.n_trials
@@ -63,29 +64,39 @@ for i = 1:sim_par.n_part %For now one sim, later with different parameter settin
         % ==== Learning for each trial ====================================
         
             % First trial with initial settings (no previous knowledge)
-            if t == 1 
-               ActionChoice(t,1) = binornd(1, ActionProb(t,1)); % 0 = No-Go, 1 = Go 
-               
-            % All subsequent trials
-            else
+%             if t == 1 
+%                % first trial, random choice 
+%                ActionChoice(t) = binornd(1, ActionProb(t,1)); % 0 = No-Go, 1 = Go 
+%                Save_P_GO = [0.5]
+%             % All subsequent trials
+%             else
                 for a = 1:2
                     % Action Weight for go and no-go 
-                    ActionWeight_go(t) = Q(s,a) + sim_par.zeta ;
-                    ActionWeight_nogo(t) =  Q(s,a) ;
+                    ActionWeight_go(s,a) = Q(s,a) + sim_par.zeta ;
+                    ActionWeight_nogo(s,a) =  Q(s,a) ;
 
-                    % Action Probability for Go (softmax function)
-                    n(t,1:2) = [ActionWeight_go(s,a); ActionWeight_nogo(s,a)]; 
-                    softmaxval = softmax(n); 
-
-
-                    % Action Probability for Go Action 
-                    ActionProb(s,a) = softmaxval(1,a) * (1 - sim_par.xi) + (sim_par.xi/2);
-                 
-                    % Action Choice Go
-                    ActionChoice(t,1) = binornd(1, ActionProb(s,a));   
                 end 
+                 % Action Probability for Go (softmax function)
+                    softmax_prob = softmax(ActionWeight_go); 
+                    
+                    % Action Probability for Go Action 
+                    ActionProb = softmax_prob * (1 - sim_par.xi) + (sim_par.xi/2);
+                    
+                    Save_P_GO = [Save_P_GO;ActionProb(s,2)] 
+                    
+                [r,c] = find(ActionProb == max(ActionProb(:,:))); 
+                if length(c) == 1    
+                    if c == 1 
+                       ActionChoice(t) = 0; %no Go
+                    elseif c == 2 
+                       ActionChoice(t) = 1; %go 
+                    end 
+                else 
+                    ActionChoice(t) = binornd(1, 0.5); % 0 = No-Go, 1 = Go 
+                end 
+                    
                  
-            end 
+            %end 
 
             % Reinforcement Value Calculation: depending on Action & Stimulus (s)
             % Reinforcement values: +1 for reward, 0 for nothing and -1 for punishment 
@@ -140,6 +151,7 @@ for i = 1:sim_par.n_part %For now one sim, later with different parameter settin
             
     end       
 
+    
             
          
      
@@ -148,7 +160,17 @@ for i = 1:sim_par.n_part %For now one sim, later with different parameter settin
 end 
 
 % Re-create Plots from the Paper (Figure 2.A-D) 
-plot(ActionProb(:,:,1))
+
+% Probability to Go, depending on stimulus condition 
+plot(Save_P_GO(stim_pres == 1))
+hold on 
+plot(Save_P_GO(stim_pres == 2))
+hold on 
+plot(Save_P_GO(stim_pres == 3))
+hold on 
+plot(Save_P_GO(stim_pres == 4))
+legend('Go-to-avoid (GA)','%Go-to-win (GW) ','No-go-to-avoid (NGA)','No-go-win (NGW)')
+
 
 % Plot Behavior depending on parameter settings 
 % .... 
