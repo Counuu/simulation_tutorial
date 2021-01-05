@@ -86,7 +86,7 @@ for i = 1:sim_par.n_part %For now one sim, later with different parameter settin
                     ActionProb(t,s,a) = softmaxval(1,a) * (1 - sim_par.xi) + (sim_par.xi/2);
                 
                     % Action Choice Go
-                    ActionChoice(t,s,a) = binornd(1, ActionProb(t,s,a));   
+                    ActionChoice(t,s) = binornd(1, ActionProb(t,s,a));   
 
                 end 
             end 
@@ -94,7 +94,7 @@ for i = 1:sim_par.n_part %For now one sim, later with different parameter settin
             % Reinforcement Value Calculation: depending on Action & Stimulus (s)
             % Reinforcement values: +1 for reward, 0 for nothing and -1 for punishment 
         
-            if ActionChoice(t,s,a) == 0 % No-go action 
+            if ActionChoice(t,s) == 0 % No-go action 
                if s == 1 %Go-to-avoid (GA)
                   reinforcement(t,s) = sim_par.punish *binornd(1, sim_par.prob); 
                elseif s == 2 %Go-to-win (GW) 
@@ -105,7 +105,7 @@ for i = 1:sim_par.n_part %For now one sim, later with different parameter settin
                   reinforcement(t,s) = sim_par.reward*binornd(1, sim_par.prob);
                end 
 
-            elseif ActionChoice(t,s,a) == 1 %1: Go action
+            elseif ActionChoice(t,s) == 1 %1: Go action
                if s == 1 %Go-to-avoid (GA)
                   reinforcement(t,s) = sim_par.punish *binornd(1, 1-sim_par.prob); 
                elseif s == 2 %Go-to-win (GW) 
