@@ -70,19 +70,19 @@ for i = 1:sim_par.n_part %For now one sim, later with different parameter settin
             else
                 for a = 1:2
                     % Action Weight for go and no-go 
-                    ActionWeight_go(t,s,a) = Q(s,a) + sim_par.zeta ;
-                    ActionWeight_nogo(t,s,a) =  Q(s,a) ;
+                    ActionWeight_go(t) = Q(s,a) + sim_par.zeta ;
+                    ActionWeight_nogo(t) =  Q(s,a) ;
 
                     % Action Probability for Go (softmax function)
-                    n(t,1:2) = [ActionWeight_go(t,s,a); ActionWeight_nogo(t,s,a)]; 
+                    n(t,1:2) = [ActionWeight_go(s,a); ActionWeight_nogo(s,a)]; 
                     softmaxval = softmax(n); 
 
 
                     % Action Probability for Go Action 
-                    ActionProb(t,s,a) = softmaxval(1,a) * (1 - sim_par.xi) + (sim_par.xi/2);
+                    ActionProb(s,a) = softmaxval(1,a) * (1 - sim_par.xi) + (sim_par.xi/2);
                  
                     % Action Choice Go
-                    ActionChoice(t,s) = binornd(1, ActionProb(t,s,a));   
+                    ActionChoice(t,1) = binornd(1, ActionProb(s,a));   
                 end 
                  
             end 
@@ -107,9 +107,9 @@ for i = 1:sim_par.n_part %For now one sim, later with different parameter settin
                % > separate parameter for sensitivity for reward (gamma) and punishment (delta) 
                % > reinforcement t-1, as they refer to the previous trial 
                if reinforcement(t) == sim_par.reward  %rewarded
-                  Q(s,1) = Q(s,1) +  sim_par.alpha* ((sim_par.gamma * reinforcement(t,s)) - Q(s,1)); 
+                  Q(s,1) = Q(s,1) +  sim_par.alpha* ((sim_par.gamma * reinforcement(t)) - Q(s,1)); 
                elseif reinforcement(t) == sim_par.punish  %punished
-                  Q(s,1) = Q(s,1) +  sim_par.alpha* ((sim_par.delta * reinforcement(t,s)) - Q(s,1));  
+                  Q(s,1) = Q(s,1) +  sim_par.alpha* ((sim_par.delta * reinforcement(t)) - Q(s,1));  
                elseif reinforcement(t) == sim_par.nothing %nothing
                   Q(s,1) = Q(s,1) +  sim_par.alpha* ( - Q(s,1));
                end 
@@ -129,9 +129,9 @@ for i = 1:sim_par.n_part %For now one sim, later with different parameter settin
                % > separate parameter for sensitivity for reward (gamma) and punishment (delta) 
                % > reinforcement t-1, as they refer to the previous trial 
                if reinforcement(t) == sim_par.reward  %rewarded
-                  Q(s,2) = Q(s,2) +  sim_par.alpha* ((sim_par.gamma * reinforcement(t,s)) - Q(s,2)); 
+                  Q(s,2) = Q(s,2) +  sim_par.alpha* ((sim_par.gamma * reinforcement(t)) - Q(s,2)); 
                elseif reinforcement(t) == sim_par.punish  %punished
-                  Q(s,2) = Q(s,2) +  sim_par.alpha* ((sim_par.delta * reinforcement(t,s)) - Q(s,2));  
+                  Q(s,2) = Q(s,2) +  sim_par.alpha* ((sim_par.delta * reinforcement(t)) - Q(s,2));  
                elseif reinforcement(t) == sim_par.nothing %nothing
                   Q(s,2) = Q(s,2) +  sim_par.alpha* ( - Q(s,2));
                end 

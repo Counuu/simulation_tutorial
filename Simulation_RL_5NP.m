@@ -70,8 +70,8 @@ for i = 1:sim_par.n_part %For now one sim, later with different parameter settin
             else
                 for a = 1:2
                     % Action Weight for go and no-go 
-                    ActionWeight_go(s,a) = Q(s,a) + sim_par.zeta ;
-                    ActionWeight_nogo(s,a) =  Q(s,a) ;
+                    ActionWeight_go(t) = Q(s,a) + sim_par.zeta ;
+                    ActionWeight_nogo(t) =  Q(s,a) ;
 
                     % Action Probability for Go (softmax function)
                     n(t,1:2) = [ActionWeight_go(s,a); ActionWeight_nogo(s,a)]; 
