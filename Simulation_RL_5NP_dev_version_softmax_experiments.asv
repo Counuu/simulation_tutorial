@@ -33,9 +33,8 @@ textConds = {'GA','GW','NGA','NGW'};
 
 for i = 1:sim_par.n_part %For now one sim, later with different parameter settings
     
-    data = struct; %struct to store all values & results
-    lf_results = []; %longformat array for the results
-    
+    data = struct;
+    lf_results = [];
     % ==== Stimulus conditions ============================================
     % for each experimental run stimulus conditions are
     % pseudorandomly determind (equally often, but randomly shuffled)
@@ -45,6 +44,8 @@ for i = 1:sim_par.n_part %For now one sim, later with different parameter settin
     
     % ==== Initialise values when no experience exists ====================
     data.Q = zeros(sim_par.n_cond,sim_par.n_actions);
+%     data.ActionWeight_go = {};%NaN(sim_par.n_trial_cond,sim_par.n_cond,sim_par.n_actions);
+%     data.ActionWeight_nogo = {};%NaN(sim_par.n_trial_cond,sim_par.n_cond,sim_par.n_actions);
     data.ActionProb = {ones(2,1)/2;ones(2,1)/2;ones(2,1)/2;ones(2,1)/2};%ones(sim_par.n_trial_cond,sim_par.n_cond,sim_par.n_actions)/2;
     data.ActionChoice = NaN(sim_par.n_trials,1);
 
@@ -65,12 +66,10 @@ for i = 1:sim_par.n_part %For now one sim, later with different parameter settin
             else
                 data.ActionWeight{cond}(condTrialNr,1:2) = [data.Q(cond,1) + sim_par.zeta , data.Q(cond,2)]; % Action weight for go and no-go 
                 data.ActionProb{cond}(condTrialNr,1) = (exp(data.ActionWeight{cond}(condTrialNr,1))/sum(exp(data.ActionWeight{cond}(condTrialNr,1:2))))* (1 - sim_par.xi) + (sim_par.xi/2); % Calculate Go probability (softmax and irreducible noise (xi))
-
-%                 data.ActionProb{cond}(condTrialNr,1) = (exp(data.ActionWeight{cond}(condTrialNr,1))/sum(exp(data.Q(cond,:)),'all'))* (1 - sim_par.xi) + (sim_par.xi/2); % Calculate Go probability (softmax and irreducible noise (xi))   
-%                 data.ActionProb{cond}(condTrialNr,2) = (exp(data.ActionWeight{cond}(condTrialNr,2))/sum(exp(data.ActionWeight{cond}(condTrialNr,1:2)),'all'))* (1 - sim_par.xi) + (sim_par.xi/2); % Calculate No Go probability (softmax and irreducible noise (xi))
-%                 maxProb = double(data.ActionProb{cond}(condTrialNr,:)==max(data.ActionProb{cond}(condTrialNr,:)));
-%                 data.ActionChoice(trial,1)= maxProb(1)+1;
-
+                %data.ActionProb{cond}(condTrialNr,1) = (exp(data.ActionWeight{cond}(condTrialNr,1))/sum(exp(data.Q(cond,:)),'all'))* (1 - sim_par.xi) + (sim_par.xi/2); % Calculate Go probability (softmax and irreducible noise (xi))   
+                %data.ActionProb{cond}(condTrialNr,2) = (exp(data.ActionWeight{cond}(condTrialNr,2))/sum(exp(data.ActionWeight{cond}(condTrialNr,1:2)),'all'))* (1 - sim_par.xi) + (sim_par.xi/2); % Calculate Go probability (softmax and irreducible noise (xi))
+                %maxProb = double(data.ActionProb{cond}(condTrialNr,:)==max(data.ActionProb{cond}(condTrialNr,:)));
+                %data.ActionChoice(trial,1)= maxProb(1)+1;
                 data.ActionChoice(trial,1) = binornd(1,data.ActionProb{cond}(condTrialNr,1))+1; % Action Choice: 1 = No-go, 2= Go
             end 
             
@@ -112,7 +111,7 @@ for i = 1:sim_par.n_part %For now one sim, later with different parameter settin
            
            %store longformat results
            condition_text = textConds{cond};
-           lf_results = [lf_results; trial, {condition_text}, data.ActionChoice(trial,1), data.reinforcement(trial,1),data.ActionProb{cond}(condTrialNr,1)];
+           lf_results = [lf_results; trial, {condition_text}, data.ActionChoice(trial,1), data.reinforcement(trial,1),max(data.ActionProb{cond}(condTrialNr,:))];
             
     end       
                                 
