@@ -16,6 +16,7 @@ sim_par.n_cond = 4; %number of conditions
 sim_par.prob = 0.8; %probability to reinforce (vs. nothing)
 sim_par.reward = 1; %valence of reward
 sim_par.punish = -1; %valence of punishment 
+sim_par.nothing = 0; %valence of no reward/no punish
 sim_par.n_trial_cond = sim_par.n_trials/sim_par.n_cond; %nr of trials per condition
 sim_par.n_actions = 2; %nr of possible actions (go, no-go)
 
@@ -58,7 +59,6 @@ for i = 1:sim_par.n_part %For now one sim, later with different parameter settin
     for t = 1:sim_par.n_trials
         
         % ==== Learning for each trial ====================================
-        % Go through each trial of current stimulus conditon
         
             % First trial with initial settings (no previous knowledge)
             if t == 1 
@@ -72,11 +72,11 @@ for i = 1:sim_par.n_part %For now one sim, later with different parameter settin
                     % Q-update: Rescorla-Wagner update       
                     % > separate parameter for sensitivity for reward (gamma) and punishment (delta) 
                     % > reinforcement t-1, as they refer to the previous trial 
-                    if reinforcement(t-1,s) == 1 %rewarded
+                    if reinforcement(t-1,s) == sim_par.reward  %rewarded
                        Q(s,a) = Q(s,a) +  sim_par.alpha* ((sim_par.gamma * reinforcement(t-1,s)) - Q(s,a)); 
-                    elseif reinforcement(t-1,s) == -1 %punished
+                    elseif reinforcement(t-1,s) == sim_par.punish  %punished
                        Q(s,a) = Q(s,a) +  sim_par.alpha* ((sim_par.delta * reinforcement(t-1,s)) - Q(s,a));  
-                    elseif reinforcement(t-1,s) == 0 %nothing
+                    elseif reinforcement(t-1,s) == sim_par.nothing %nothing
                        Q(s,a) = Q(s,a) +  sim_par.alpha* ( - Q(s,a));
                     end 
                     
