@@ -9,30 +9,36 @@
 clear all
 close all
 
-%% Initialise parameters 
-% sim_par is a structure containing all settings for the simulation
+%% Initialise parameters
+presetSimPar = 0; %set 1 to load preset simulation parameters (not fully implemented yet)
 
-%Experiment settings
-sim_par.p_win = 0.8; %win probability
-sim_par.p_lose = 0.2; %lose probability
-sim_par.n_trials = 240; %number of trials (total)
-sim_par.n_part = 50;   %number of simulated participants
-sim_par.n_cond = 4; %number of conditions 
-%sim_par.prob = 0.8; %probability to reinforce (vs. nothing)
-sim_par.reward = 1; %valence of reward
-sim_par.punish = -1; %valence of punishment 
-sim_par.nothing = 0; %valence of no reward/no punish
-sim_par.n_trial_cond = sim_par.n_trials/sim_par.n_cond; %nr of trials per condition
-sim_par.n_actions = 2; %nr of possible actions (go, no-go)
+if presetSimPar == 1
+    load()%path for preset stimulation parameters
+else
+    % sim_par is a structure containing all settings for the simulation
 
-%RL settings
-sim_par.alpha = 0.1;    %learning rate of the simulated agent
-% sim_par.beta  = 2;      %inverse temperature of the simulated agent
-sim_par.xi  = 0.05;      %lapse of the simulated agent
-sim_par.gamma  = 4;     %reward sensitivity of the simulated agent
-sim_par.delta  = 6;     %punishment sensitivty of the simulated agent
-%sim_par.epsilon  = 0;   %approach-avoidance bias of the simulated agent
-sim_par.zeta  = 0.2;      %action bias of the simulated agent
+    %Experiment settings
+    sim_par.p_win = 0.8; %win probability
+    sim_par.p_lose = 0.2; %lose probability
+    sim_par.n_trials = 240; %number of trials (total)
+    sim_par.n_part = 60;   %number of simulated participants
+    sim_par.n_cond = 4; %number of conditions 
+    %sim_par.prob = 0.8; %probability to reinforce (vs. nothing)
+    sim_par.reward = 1; %valence of reward
+    sim_par.punish = -1; %valence of punishment 
+    sim_par.nothing = 0; %valence of no reward/no punish
+    sim_par.n_trial_cond = sim_par.n_trials/sim_par.n_cond; %nr of trials per condition
+    sim_par.n_actions = 2; %nr of possible actions (go, no-go)
+
+    %RL settings
+    sim_par.alpha = 0.1;    %learning rate of the simulated agent
+    % sim_par.beta  = 2;      %inverse temperature of the simulated agent
+    sim_par.xi  = 0.05;      %lapse of the simulated agent
+    sim_par.gamma  = 4;     %reward sensitivity of the simulated agent
+    sim_par.delta  = 6;     %punishment sensitivty of the simulated agent
+    %sim_par.epsilon  = 0;   %approach-avoidance bias of the simulated agent
+    sim_par.zeta  = 0.2;      %action bias of the simulated agent
+end
 
 %There are 4 conditions: GA (go to avoid), GW (go to win), NGA (no go to
 %avoid) and NGW (no go to win)
@@ -42,8 +48,10 @@ textConds = {'GA','GW','NGA','NGW'};
 mkdir([pwd '\results'], '\plots')
 mkdir([pwd '\results'], '\data')
 mkdir([pwd '\results'], '\backup')
+
+%Clear data and plots folder
 delete([pwd '\results\plots\*.png'])
-delete([pwd '\results\data\*.png'])
+delete([pwd '\results\data\*.mat'])
 
 %% Simulation loop for Reinforcement Learning
 for subj = 1:sim_par.n_part %Runs for specified number of simulated participants
