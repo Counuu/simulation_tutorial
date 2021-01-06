@@ -41,6 +41,9 @@ textConds = {'GA','GW','NGA','NGW'};
 %Create results folder if not existent to store plots and data
 mkdir([pwd '\results'], '\plots')
 mkdir([pwd '\results'], '\data')
+mkdir([pwd '\results'], '\backup')
+delete([pwd '\results\plots\*.png'])
+delete([pwd '\results\data\*.png'])
 
 %% Simulation loop for Reinforcement Learning
 for subj = 1:sim_par.n_part %Runs for specified number of simulated participants
@@ -153,39 +156,41 @@ end
 
 %% Summarize go-probabilities for all participants depending on condition
 %Preallocation of variables
-allSubj_GA = NaN(sim_par.n_trial_cond,sim_par.n_part); %GA condition
-allSubj_GW = NaN(sim_par.n_trial_cond,sim_par.n_part); % GW condition
-allSubj_NGA = NaN(sim_par.n_trial_cond,sim_par.n_part); % NGA condition
-allSubj_NGW = NaN(sim_par.n_trial_cond,sim_par.n_part); % NGW condition
+allSubj.GA = NaN(sim_par.n_trial_cond,sim_par.n_part); %GA condition
+allSubj.GW = NaN(sim_par.n_trial_cond,sim_par.n_part); % GW condition
+allSubj.NGA = NaN(sim_par.n_trial_cond,sim_par.n_part); % NGA condition
+allSubj.NGW = NaN(sim_par.n_trial_cond,sim_par.n_part); % NGW condition
 
 %read all results from the data folder for each simulated participant
 for subj = 1:sim_par.n_part
     load([pwd '\results\data\simulation_subj_' num2str(subj) '.mat'], 'results_longformat_table')
-    allSubj_GA(:,subj)= cell2mat(results_longformat_table.goProb(results_longformat_table.condition=='GA'));
-    allSubj_GW(:,subj)= cell2mat(results_longformat_table.goProb(results_longformat_table.condition=='GW'));
-    allSubj_NGA(:,subj)= cell2mat(results_longformat_table.goProb(results_longformat_table.condition=='NGA'));
-    allSubj_NGW(:,subj)= cell2mat(results_longformat_table.goProb(results_longformat_table.condition=='NGW'));
+    allSubj.GA(:,subj)= cell2mat(results_longformat_table.goProb(results_longformat_table.condition=='GA'));
+    allSubj.GW(:,subj)= cell2mat(results_longformat_table.goProb(results_longformat_table.condition=='GW'));
+    allSubj.NGA(:,subj)= cell2mat(results_longformat_table.goProb(results_longformat_table.condition=='NGA'));
+    allSubj.NGW(:,subj)= cell2mat(results_longformat_table.goProb(results_longformat_table.condition=='NGW'));
 end
 
 %calculate mean of go-probability over all participants for each trial
-allSubj_GA(:,sim_par.n_part+1) = mean(allSubj_GA(:,1:sim_par.n_part),2,'omitnan');
-allSubj_GW(:,sim_par.n_part+1) = mean(allSubj_GW(:,1:sim_par.n_part),2,'omitnan');
-allSubj_NGA(:,sim_par.n_part+1) = mean(allSubj_NGA(:,1:sim_par.n_part),2,'omitnan');
-allSubj_NGW(:,sim_par.n_part+1) = mean(allSubj_NGW(:,1:sim_par.n_part),2,'omitnan');
+allSubj.GA(:,sim_par.n_part+1) = mean(allSubj.GA(:,1:sim_par.n_part),2,'omitnan');
+allSubj.GW(:,sim_par.n_part+1) = mean(allSubj.GW(:,1:sim_par.n_part),2,'omitnan');
+allSubj.NGA(:,sim_par.n_part+1) = mean(allSubj.NGA(:,1:sim_par.n_part),2,'omitnan');
+allSubj.NGW(:,sim_par.n_part+1) = mean(allSubj.NGW(:,1:sim_par.n_part),2,'omitnan');
 
 %plot means of go probabilities for each condition
 figureResultsAllSubj = figure('Name','Mean results for all conditions over all participants');
-    plot(1:sim_par.n_trial_cond, allSubj_GA(:,sim_par.n_part+1),'DisplayName','GA')
+    plot(1:sim_par.n_trial_cond, allSubj.GA(:,sim_par.n_part+1),'DisplayName','GA')
     hold on
-    plot(1:sim_par.n_trial_cond, allSubj_GW(:,sim_par.n_part+1),'DisplayName','GW')
-    plot(1:sim_par.n_trial_cond, allSubj_NGA(:,sim_par.n_part+1),'DisplayName','NGA')
-    plot(1:sim_par.n_trial_cond, allSubj_NGW(:,sim_par.n_part+1),'DisplayName','NGW')
+    plot(1:sim_par.n_trial_cond, allSubj.GW(:,sim_par.n_part+1),'DisplayName','GW')
+    plot(1:sim_par.n_trial_cond, allSubj.NGA(:,sim_par.n_part+1),'DisplayName','NGA')
+    plot(1:sim_par.n_trial_cond, allSubj.NGW(:,sim_par.n_part+1),'DisplayName','NGW')
     legend
     title('Mean results for each condition')
     xlabel('trials')
     ylabel('Go probability')
 
 % save plot
-saveas(figureResultsAllSubj,[pwd '\results\plots\go_prob_allsubj.png'])     
+saveas(figureResultsAllSubj,[pwd '\results\plots\go_prob_allsubj.png'])   
+saveas(figureResultsAllSubj, strcat(pwd, '\results\backup\go_prob_allsubj_', string(datetime('now','Format','yyMMdd_HHmm')), '.png'))
+save(strcat(pwd, '\results\backup\data_allsubj_', string(datetime('now','Format','yyMMdd_HHmm'))),'allSubj');
 
 
